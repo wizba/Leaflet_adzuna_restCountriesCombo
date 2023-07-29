@@ -1,0 +1,86 @@
+.CountriesContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
+  color: #c0c0c0;
+    /* background-image: linear-gradient(to right top, #004d7a, #008793, #00bf72); */
+  transition: all 0.3s ease; /* Add transition property for smooth animation */
+  background-color: #27313f;
+}
+
+/* Custom styling for the scrollbar */
+.custom-scrollbar-container {
+  /* Set a fixed height for the container */
+  height: 300px;
+  /* Define the color of the track (scrollbar background) */
+  background-color: #f1f1f1;
+  /* Define the width of the scrollbar */
+  scrollbar-width: thin;
+}
+
+/* Style the scrollbar thumb (the draggable handle) for WebKit-based browsers (Chrome, Safari) */
+.custom-scrollbar-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
+
+/* Make the scrollbar thumb darker on hover for WebKit-based browsers (Chrome, Safari) */
+.custom-scrollbar-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+/* Style the scrollbar thumb (the draggable handle) for Mozilla Firefox */
+.custom-scrollbar-container {
+  scrollbar-color: #888 #f1f1f1; /* color of thumb and track */
+  scrollbar-width: thin;
+}
+
+/* Make the scrollbar thumb darker on hover for Mozilla Firefox */
+.custom-scrollbar-container:hover {
+  scrollbar-color: #555 #f1f1f1; /* color of thumb and track */
+}
+
+/* Style the scrollbar thumb (the draggable handle) for Microsoft Edge (Chromium-based) */
+@supports (-ms-ime-align: auto) {
+  .custom-scrollbar-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+  }
+}
+
+/* Make the scrollbar thumb darker on hover for Microsoft Edge (Chromium-based) */
+@supports (-ms-ime-align: auto) {
+  .custom-scrollbar-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+}
+
+/* Style the scrollbar thumb (the draggable handle) for Microsoft Edge (Legacy, EdgeHTML engine) */
+@supports not (-ms-ime-align: auto) {
+  .custom-scrollbar-container {
+    scrollbar-face-color: #888; /* color of thumb */
+    scrollbar-track-color: #f1f1f1; /* color of track */
+  }
+}
+
+/* Make the scrollbar thumb darker on hover for Microsoft Edge (Legacy, EdgeHTML engine) */
+@supports not (-ms-ime-align: auto) {
+  .custom-scrollbar-container:hover {
+    scrollbar-face-color: #555; /* color of thumb */
+    scrollbar-track-color: #f1f1f1; /* color of track */
+  }
+}
+
+
+@media only screen and (min-width: 800px) {
+  /* Add your specific CSS rules here */
+  .CountriesContainer {
+    position: static;
+    width: 300px;
+    transition: all 0.3s ease; /* Add transition property for smooth animation */
+    background-color: #27313f;
+  }
+}
