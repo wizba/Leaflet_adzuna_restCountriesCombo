@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useReducer } from "react";
 import { getCountries } from "../Services/ContriesService";
-import { SET_DATA, onSetData, onSuccessAction } from "./AppCtxActions";
+import { onSetData, onSuccessAction } from "./AppCtxActions";
 import countriesEffect from "./reducers/countriesEffect";
 import countriesReducer from "./reducers/countriesReducer";
 import { CountryInterface, EffectInterface, initCtxInterface } from "../models/models";
@@ -65,7 +65,7 @@ const CountriesProvider: React.FC<CountryComp> = ({ children }:CountryComp) => {
 
   useEffect(()=>{
     countriesApi();
-  },[])
+  },[countriesApi])
   return (
     <CountriesContext.Provider value={{ countries:state.countries??[],hasError:apiState.hasError,isLoading:false }}>
       {children}

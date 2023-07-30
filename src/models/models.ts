@@ -36,3 +36,21 @@ export interface CountriesEffect{
     type:string;
     payload:EffectInterface
 }
+
+export interface Job{
+    id:string;
+    title:string;
+    tag:string;
+    label:string;
+    description:string;
+    companyName:string;
+    latlong:[number,number];
+    redirectUrl:string;
+    salaryPrediction:number;
+    created:string
+}
+
+export interface SelectedCountry{
+    country:CountryInterface;
+    jobs:Array<Job>
+}

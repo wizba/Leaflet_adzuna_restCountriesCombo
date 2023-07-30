@@ -1,5 +1,5 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
+import React, { useState, useEffect, ChangeEvent, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import JobCountries from './Components/JobCountries/JobCountries';
 import { CountriesProvider } from './ShareDataCtx/AppCtx';
 
@@ -46,14 +46,14 @@ const LocationMarker: React.FC<location> = (props: location) => {
     const { position } = props;
     const map = useMap();
 
-    const handleMapClick = () => {
+    const handleMapClick = useCallback(() => {
         map.flyTo(position, map.getZoom());
-    };
+    },[map,position]);
 
     useEffect(() => {
         console.table(position)
         handleMapClick()
-    }, [map, position]);
+    }, [map, position,handleMapClick]);
 
     return <Marker position={position}>
         <Popup>You are here</Popup>
@@ -64,7 +64,7 @@ const LocationMarker: React.FC<location> = (props: location) => {
 function App() {
     const initialPosition: [number, number] = [51.505, -0.09];
     const [position, setPosition] = useState<[number, number]>(initialPosition);
-    const [group, setGroup] = useState<'southAfrica' | 'america'>('southAfrica');
+    const [group, setGroup] = useState<string>('southAfrica');
     // Function to handle latitude and longitude changes
     const handleCoordinatesChange = (latitude: number, longitude: number) => {
         setPosition([latitude, longitude]);
@@ -84,7 +84,7 @@ function App() {
 
     // Function to handle group selection from dropdown
     const handleGroupChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        const selectedGroup = event.target.value as 'southAfrica' | 'america';
+        const selectedGroup = event.target.value;
         setGroup(selectedGroup);
     };
 
@@ -93,7 +93,6 @@ function App() {
         if (group === 'southAfrica') {
             const [latitude, longitude] = southAfricaMarkers[0];
             setPosition([latitude, longitude]);
-
         } else {
             const [latitude, longitude] = americanMarkers[0];
             setPosition([latitude, longitude]);
@@ -102,92 +101,93 @@ function App() {
 
     return (
         <CountriesProvider>
-        <div className="App">
+            <div className="App">
+                <div className="flex">
+                    <JobCountries />
+                    <MapContainer center={position} zoom={5} scrollWheelZoom={false} zoomControl={true} className="h-96">
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
 
-            <div className="flex">
-                <JobCountries />
-                <MapContainer center={position} zoom={5} scrollWheelZoom={false} zoomControl={true} className="h-96">
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
+                        {/* Render South Africa markers */}
+                        {group === 'southAfrica'
+                            ? southAfricaMarkers.map((markerPosition, index) => (
+                                <Marker key={index} position={markerPosition}>
+                                    <Popup>
+                                        {southAfricaCities[index]}: <br />
+                                        Latitude: {markerPosition[0]}, Longitude: {markerPosition[1]}
+                                        <div style={{width:'100%'}}>
+                                          <img style={{width:'100%'}} className="h-auto max-w-xl rounded-lg shadow-xl dark:shadow-gray-800" src="https://hips.hearstapps.com/hmg-prod/images/close-up-of-purple-crocus-flowers-united-kingdom-uk-royalty-free-image-1674159456.jpg" alt=""/>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))
+                            : null}
 
-                    {/* Render South Africa markers */}
-                    {group === 'southAfrica'
-                        ? southAfricaMarkers.map((markerPosition, index) => (
-                            <Marker key={index} position={markerPosition}>
-                                <Popup>
-                                    {southAfricaCities[index]}: <br />
-                                    Latitude: {markerPosition[0]}, Longitude: {markerPosition[1]}
-                                </Popup>
-                            </Marker>
-                        ))
-                        : null}
+                        {/* Render American markers */}
+                        {group === 'america'
+                            ? americanMarkers.map((markerPosition, index) => (
+                                <Marker key={index + southAfricaMarkers.length} position={markerPosition}>
+                                    <Popup>
+                                        {americanCities[index]}: <br />
+                                        Latitude: {markerPosition[0]}, Longitude: {markerPosition[1]}
+                                    </Popup>
+                                </Marker>
+                            ))
+                            : null}
 
-                    {/* Render American markers */}
-                    {group === 'america'
-                        ? americanMarkers.map((markerPosition, index) => (
-                            <Marker key={index + southAfricaMarkers.length} position={markerPosition}>
-                                <Popup>
-                                    {americanCities[index]}: <br />
-                                    Latitude: {markerPosition[0]}, Longitude: {markerPosition[1]}
-                                </Popup>
-                            </Marker>
-                        ))
-                        : null}
-
-                    {/* LocationMarker to handle user's location */}
-                    <LocationMarker position={position} />
-                </MapContainer>
-            </div>
-
-            {/* Dropdown to select a group */}
-            {/* <div>
-        <label>Select a group:</label>
-        <select onChange={handleGroupChange} value={group}>
-          <option value="southAfrica">South Africa</option>
-          <option value="america">America</option>
-        </select>
-      </div> */}
-
-            {/* Dropdown to select a city */}
-            {/* <div>
-        <label>Select a city:</label>
-        <select onChange={handleCityChange}>
-          {group === 'southAfrica'
-            ? southAfricaCities.map((city, index) => (
-                <option key={index} value={index}>
-                  {city}
-                </option>
-              ))
-            : americanCities.map((city, index) => (
-                <option key={index} value={index}>
-                  {city}
-                </option>
-              ))}
-        </select>
-      </div> */}
-
-            {/* Input fields for latitude and longitude */}
-            {/* <div>
-        <label>Latitude:</label>
-        <input
-          type="number"
-          value={position[0]} // Latitude value from the state
-          onChange={(e) => handleCoordinatesChange(parseFloat(e.target.value), position[1])}
-        />
-        <br />
-        <label>Longitude:</label>
-        <input
-          type="number"
-          value={position[1]} // Longitude value from the state
-          onChange={(e) => handleCoordinatesChange(position[0], parseFloat(e.target.value))}
-        />
-      </div> */}
-
-            {/* MapContainer with dynamic position and zoom controls */}
-
+                        {/* LocationMarker to handle user's location */}
+                        <LocationMarker position={position} />
+                    </MapContainer>
+                </div>
+                {/* Dropdown to select a group */}
+                <div>
+            <label>Select a group:</label>
+            <select onChange={handleGroupChange} value={group}>
+            <option value="southAfrica">South Africa</option>
+            <option value="america">America</option>
+            </select>
         </div>
+
+                {/* Dropdown to select a city */}
+                <div>
+            <label>Select a city:</label>
+            <select onChange={handleCityChange}>
+            {group === 'southAfrica'
+                ? southAfricaCities.map((city, index) => (
+                    <option key={index} value={index}>
+                    {city}
+                    </option>
+                ))
+                : americanCities.map((city, index) => (
+                    <option key={index} value={index}>
+                    {city}
+                    </option>
+                ))}
+            </select>
+        </div>
+
+                {/* Input fields for latitude and longitude */}
+                <div>
+            <label>Latitude:</label>
+            <input
+            type="number"
+            value={position[0]} // Latitude value from the state
+            onChange={(e) => handleCoordinatesChange(parseFloat(e.target.value), position[1])}
+            />
+            <br />
+            <label>Longitude:</label>
+            <input
+            type="number"
+            value={position[1]} // Longitude value from the state
+            onChange={(e) => handleCoordinatesChange(position[0], parseFloat(e.target.value))}
+            />
+        </div>
+
+                {/* MapContainer with dynamic position and zoom controls */}
+
+            </div>
         </CountriesProvider>
 
     );
